@@ -1,10 +1,58 @@
-import React, { useState } from 'react'
-
+import React, { useContext, useEffect, useState } from 'react';
+import axios from 'axios'
+import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
+import { MainContext } from '../../contexts/MainContext'
 function Login() {
+  const navigate = useNavigate();
+  const { user } = useContext(MainContext)
+  useEffect(() => {
+    if (user) {
+      navigate('/home')
+    }
+  }, [user, navigate]);
   const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    fullname: '', // Only used for sign-up
+  });
 
   const toggleForm = () => {
-    setIsLogin((prevIsLogin) => !prevIsLogin);
+    setIsLogin(prevIsLogin => !prevIsLogin);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const response = await axios.post('http://localhost:9294/api/auth/login', formData, {
+      withCredentials: true,
+    })
+    if (response.status === 201) {
+      toast.success('Logged In');
+      navigate('/home')
+    } else {
+      toast.error('Login failed');
+    }
+  };
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    const response = await axios.post('http://localhost:9294/api/auth/signup', formData, {
+      withCredentials: true,
+    })
+    if (response.status === 201) {
+      toast.success('Signup Successfull');
+    } else {
+      toast.error('Signup failed');
+    }
   };
 
   return (
@@ -14,44 +62,72 @@ function Login() {
           {isLogin ? 'Login' : 'Sign Up'}
         </h2>
 
-        {isLogin ? (
-          <div>
-            <input
-              type="email"
-              placeholder="Email"
-              className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full p-2 mb-6 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors">
-              Login
-            </button>
-          </div>
-        ) : (
-          <div>
-            <input
-              type="text"
-              placeholder="Full Name"
-              className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full p-2 mb-6 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors">
-              Sign Up
-            </button>
-          </div>
-        )}
+        <form onSubmit={isLogin ? handleLogin : handleSignup}>
+          {isLogin ? (
+            <>
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full p-2 mb-6 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Login
+              </button>
+            </>
+          ) : (
+            <>
+              <input
+                type="text"
+                name="fullname"
+                placeholder="Full Name"
+                value={formData.fullname}
+                onChange={handleChange}
+                className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full p-2 mb-6 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Sign Up
+              </button>
+            </>
+          )}
+        </form>
 
         <p className="text-center mt-4">
           {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
@@ -65,7 +141,6 @@ function Login() {
       </div>
     </div>
   );
-
 }
 
-export default Login
+export default Login;

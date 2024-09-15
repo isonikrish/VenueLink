@@ -1,18 +1,34 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { CiBookmark } from "react-icons/ci";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { LuVideo } from "react-icons/lu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { MainContext } from '../../contexts/MainContext'
 import useravatar from "../../assets/user-avatar.png";
+import axios from "axios";
+import toast from 'react-hot-toast'
 
 function Navbar() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+    const navigate = useNavigate()
     const handleToggleDropdown = () => {
         setIsDropdownOpen((prevState) => !prevState);
     };
-
+    const { user } = useContext(MainContext);
+    const logout = async () => {
+        try {
+            const res = await axios.post('http://localhost:9294/api/auth/logout', {}, {
+                withCredentials: true,
+            });
+            if (res.status === 200) {
+                toast.success("Logged Out Successfully")
+                navigate('/')
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    }
     return (
         <nav className="flex justify-between items-center px-10 py-4 bg-white border-b shadow-md">
             <Link to="/" className="text-2xl font-bold text-blue-500">
@@ -78,9 +94,13 @@ function Navbar() {
                                 </button>
                             </Link>
                             <Link to="/">
-                                <button className="block w-full text-left px-4 py-2 text-black rounded-md">
-                                    Login
-                                </button>
+                                {user ?
+                                    <button className="block w-full text-left px-4 py-2 text-black rounded-md" onClick={logout}>
+                                        Logout
+                                    </button> :
+                                    <button className="block w-full text-left px-4 py-2 text-black rounded-md">
+                                        Login
+                                    </button>}
                             </Link>
 
                         </div>
