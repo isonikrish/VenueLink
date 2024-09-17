@@ -1,6 +1,7 @@
 import express from "express";
 import authRoutes from "./routes/auth.js";
 import eventRoutes from './routes/event.js';
+import userRoutes from './routes/user.js'
 import dotenv from "dotenv";
 import connectMongoDB from "./config/dbconfig.js";
 import cookieParser from "cookie-parser";
@@ -25,7 +26,11 @@ app.use(
   })
 );
 app.use("/api/auth", authRoutes);
-app.use("/api/event", eventRoutes)
+app.use("/api/event", eventRoutes);
+app.use('/api/user', userRoutes)
+
+
+
 app.listen(process.env.PORT, () => {
   console.log(`Server Started at ${process.env.PORT}`);
   connectMongoDB();

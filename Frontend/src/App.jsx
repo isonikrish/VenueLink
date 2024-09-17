@@ -6,6 +6,7 @@ import Login from './pages/Login/Login'
 import {Toaster} from 'react-hot-toast'
 import CreateEvent from './pages/CreateEvent/CreateEvent'
 import EventDisplay from './pages/EventDisplay/EventDisplay'
+import YourEvents from './pages/YourEvents/YourEvents'
 function App() {
   
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path='/home' element={<Home />} />
         <Route path='/create' element={<CreateEvent />}/>
         <Route path='/event/:id' element={<EventDisplay />}/>
+        <Route path='/yourevents' element={<YourEvents />}/>
       </Routes>
       <Toaster />
     </>

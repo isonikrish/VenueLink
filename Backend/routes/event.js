@@ -5,6 +5,5 @@ import multer from 'multer'
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-router.post('/create',protectRoute, upload.single('eventThumbnail'),handleCreateEvent)
-
+router.post('/create',protectRoute, upload.single('eventThumbnail'),handleCreateEvent);
 export default router;

@@ -16,7 +16,7 @@ function Navbar() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [eventDropDown, seteventDropDown] = useState(false);
     const { user } = useContext(MainContext);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const handleToggleDropdown = () => {
         setIsDropdownOpen((prevState) => !prevState);
     };
@@ -38,7 +38,7 @@ function Navbar() {
         }
     }
     const dropdownOptions = [
-        { label: 'Your Events', action: () => navigate('/events') },
+        { label: 'Your Events', action: () => navigate('/yourevents') },
         { divider: true },
         { label: 'View Profile', action: () => navigate('/profile') },
         user
