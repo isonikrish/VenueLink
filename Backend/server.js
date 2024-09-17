@@ -1,11 +1,19 @@
 import express from "express";
 import authRoutes from "./routes/auth.js";
+import eventRoutes from './routes/event.js';
 import dotenv from "dotenv";
 import connectMongoDB from "./config/dbconfig.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import cloudinary from 'cloudinary'
 dotenv.config();
 const app = express();
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -17,7 +25,7 @@ app.use(
   })
 );
 app.use("/api/auth", authRoutes);
-
+app.use("/api/event", eventRoutes)
 app.listen(process.env.PORT, () => {
   console.log(`Server Started at ${process.env.PORT}`);
   connectMongoDB();

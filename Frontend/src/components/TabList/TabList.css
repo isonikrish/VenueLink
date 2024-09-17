@@ -1,0 +1,25 @@
+.tablist {
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tablist ul {
+  display: flex;
+  justify-content: space-evenly;
+  padding: 0;
+  margin: 0;
+}
+.tablist ul li {
+  list-style: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 15px 20px;
+  transition: background-color 0.3s ease, border-bottom 0.3 ease;
+}
+.tablist ul li:hover {
+  border-bottom: 5px solid blue;
+}
+.active {
+  border-bottom: 5px solid blue;
+}

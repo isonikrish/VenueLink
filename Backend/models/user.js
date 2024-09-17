@@ -31,6 +31,17 @@ const userSchema = new mongoose.Schema(
         checkedInAt: { type: Date }, // Date of check-in
       },
     ],
+    joinedEvents: [
+      {
+        eventId: { type: mongoose.Schema.Types.ObjectId, ref: "Event" }, // Reference to the event
+        checkedInAt: { type: Date }, // Date of check-in
+      },
+    ],
+    createdEvents: [
+      {
+        eventId: { type: mongoose.Schema.Types.ObjectId, ref: "Event" }, // Reference to 
+      },
+    ]
   },
   { timestamps: true }
 );
