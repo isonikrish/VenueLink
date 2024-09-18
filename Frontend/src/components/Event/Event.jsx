@@ -2,7 +2,7 @@ import React from 'react';
 import { CiBookmark } from 'react-icons/ci';
 import { IoShareOutline } from 'react-icons/io5';
 
-function Event({ image, date, name, host, priceType, priceValue, attendees }) {
+function Event({ image, date, name, host, priceType, priceValue, attendees, role }) {
   return (
     <div className="relative max-w-lg bg-white rounded-lg shadow-sm overflow-hidden flex items-center border p-2 mb-4">
       {/* Event Image */}
@@ -27,6 +27,17 @@ function Event({ image, date, name, host, priceType, priceValue, attendees }) {
           <p className="text-xs text-gray-600 mb-0.5">{date}</p>
           <h2 className="text-lg font-bold mb-1">{name}</h2>
           <p className="text-xs text-gray-600 mb-0.5">Organized by {host}</p>
+          {/* Event Role Badge */}
+          {role &&
+            <div className="absolute top-3 right-2">
+              <span
+                className={`px-2 py-1 text-xs font-bold rounded-md ${role === 'Organizer' ? 'bg-green-500 text-white' : 'bg-yellow-400 text-gray-800'
+                  }`}
+              >
+                {role}
+              </span>
+            </div>
+          }
           {priceType === "free" ?
             <p className="text-xs text-gray-600 mb-1">Free</p> :
             <p className="text-xs text-gray-600 mb-1">Price: {priceValue}</p>}

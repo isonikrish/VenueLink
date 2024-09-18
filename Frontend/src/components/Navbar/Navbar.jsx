@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { CiBookmark } from "react-icons/ci";
 import { IoMdArrowDropdown } from "react-icons/io";
+import { IoIosNotificationsOutline } from "react-icons/io";
 import { LuVideo } from "react-icons/lu";
 import { IoIosArrowDown } from "react-icons/io";
 import { FaRegCopy } from "react-icons/fa6";
@@ -85,6 +86,10 @@ function Navbar() {
                 {/* Bookmark */}
                 <Link to="/bookmarks" className="text-gray-500 hover:text-gray-800">
                     <CiBookmark className="text-2xl" />
+                </Link>
+                {/* Notifications */}
+                <Link to="/notifications" className="text-gray-500 hover:text-gray-800">
+                    <IoIosNotificationsOutline className="text-2xl" />
                 </Link>
 
                 {/* Profile Dropdown */}

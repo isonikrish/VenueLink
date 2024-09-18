@@ -1,7 +1,8 @@
 import express from "express";
 import authRoutes from "./routes/auth.js";
 import eventRoutes from './routes/event.js';
-import userRoutes from './routes/user.js'
+import userRoutes from './routes/user.js';
+import notificationsRoutes from './routes/notificaton.js';
 import dotenv from "dotenv";
 import connectMongoDB from "./config/dbconfig.js";
 import cookieParser from "cookie-parser";
@@ -28,7 +29,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/event", eventRoutes);
 app.use('/api/user', userRoutes)
-
+app.use('/api/notifications', notificationsRoutes);
 
 
 app.listen(process.env.PORT, () => {

@@ -1,15 +1,24 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { MainContext } from '../../contexts/MainContext';
 import Event from '../../components/Event/Event';
-
+import axios from 'axios';
 function YourEvents() {
     const { user } = useContext(MainContext);
     const [yourEvents, setYourEvents] = useState([]);
 
     useEffect(() => {
-        if (user && user.createdEvents) {
-            setYourEvents(user.createdEvents);
+        const fetchEvents = async() =>{
+            if(user){
+                try {
+                    const response = await axios.get(`http://localhost:9294/api/event/getEvents`, { withCredentials: true });
+                    setYourEvents(response.data);
+                } catch (error) {
+                    console.error('Error fetching events:', error);
+                }
+            }
         }
+        fetchEvents();
+        //
     }, [user]);
 
     if (!user) {
@@ -43,6 +52,7 @@ function YourEvents() {
                             host={yourevent.organizer.fullname}
                             priceType={yourevent.eventPrice}
                             priceValue={yourevent.eventPriceValue}
+                            role={yourevent.role}
                             attendees={'0'}
                         />
                     ))}

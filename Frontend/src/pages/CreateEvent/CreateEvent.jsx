@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import useravatar from '../../assets/user-avatar.png'
 import TabList from '../../components/TabList/TabList';
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
@@ -6,6 +7,7 @@ import 'react-clock/dist/Clock.css';
 import { RxCross1 } from "react-icons/rx";
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
+import debounce from 'lodash.debounce'; // Import debounce from lodash
 import { useNavigate } from 'react-router-dom'
 function CreateEvent() {
   const navigate = useNavigate();
@@ -13,6 +15,7 @@ function CreateEvent() {
   const [thumbnailUrl, setThumbnailUrl] = useState('');
   const fileInputRef = useRef(null);
   const [emailInput, setEmailInput] = useState('');
+  const [userSearchResult, setUserSearchResult] = useState(null);
   const [formData, setFormData] = useState({
     eventName: '',
     eventDescription: '',
@@ -36,6 +39,29 @@ function CreateEvent() {
   const handleTabClick = (tabName) => {
     setActiveTab(tabName);
   };
+
+
+  const debouncedSearch = useRef(
+    debounce(async (email) => {
+      try {
+        const response = await axios.get('http://localhost:9294/api/event/findUser', {
+          params: { email },
+          withCredentials: true, // Move this inside the config object
+        });
+        setUserSearchResult(response.data);
+      } catch (error) {
+        console.error('Error fetching user:', error);
+      }
+    }, 1000) // Adjust debounce delay as needed
+  ).current;
+  useEffect(() => {
+    if (emailInput) {
+      debouncedSearch(emailInput);
+    } else {
+      setUserSearchResult(null);
+    }
+  }, [emailInput]);
+
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
@@ -319,7 +345,7 @@ function CreateEvent() {
             <h2 className="text-xl font-bold mb-4">Co-Organizers</h2>
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">Co-Organizer Email:</label>
-              <div className='flex gap-5'>
+              <div>
 
 
                 <input
@@ -330,7 +356,29 @@ function CreateEvent() {
                   onChange={(e) => setEmailInput(e.target.value)}
                   placeholder='Email'
                 />
-                <button className='bg-slate-100 p-4 rounded-md' onClick={addEmail} >Add</button>
+                {userSearchResult && (
+                  <div className="results flex items-center gap-4 my-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white">
+
+                    <div className="profile-img">
+                      <img
+                        src={userSearchResult.profilePicUrl || useravatar} // Provide a default image if none is available
+                        alt="Profile"
+                        className="w-16 h-16 rounded-full object-cover"
+                      />
+                    </div>
+                    <div className="user-info flex flex-col">
+                      <span className="text-lg font-semibold text-gray-800">{userSearchResult.fullname}</span>
+                      <span className="text-sm text-gray-600">{userSearchResult.email}</span>
+                    </div>
+                    <button
+                      className="ml-auto bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      onClick={addEmail}
+                    >
+                      Add
+                    </button>
+                  </div>
+                )}
+
               </div>
               <ul className="space-y-2">
                 {formData.coorganizerEmail.map((email, index) => (
