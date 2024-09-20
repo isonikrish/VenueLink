@@ -7,6 +7,7 @@ import {Toaster} from 'react-hot-toast'
 import CreateEvent from './pages/CreateEvent/CreateEvent'
 import EventDisplay from './pages/EventDisplay/EventDisplay'
 import YourEvents from './pages/YourEvents/YourEvents'
+
 function App() {
   
   return (

@@ -53,7 +53,7 @@ function YourEvents() {
                             priceType={yourevent.eventPrice}
                             priceValue={yourevent.eventPriceValue}
                             role={yourevent.role}
-                            attendees={'0'}
+                            attendees={yourevent.attendees}
                         />
                     ))}
                 </div>

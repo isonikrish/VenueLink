@@ -1,8 +1,8 @@
 import React from 'react';
 import { CiBookmark } from 'react-icons/ci';
 import { IoShareOutline } from 'react-icons/io5';
-
-function Event({ image, date, name, host, priceType, priceValue, attendees, role }) {
+import { Link } from 'react-router-dom'
+function Event({ image, date, name, host, priceType, priceValue, attendees, role, eventId }) {
   return (
     <div className="relative max-w-lg bg-white rounded-lg shadow-sm overflow-hidden flex items-center border p-2 mb-4">
       {/* Event Image */}
@@ -25,7 +25,7 @@ function Event({ image, date, name, host, priceType, priceValue, attendees, role
         {/* Event Details */}
         <div className="ml-1 mt-2">
           <p className="text-xs text-gray-600 mb-0.5">{date}</p>
-          <h2 className="text-lg font-bold mb-1">{name}</h2>
+          <Link to={`/event/${eventId}`} className='underline'><h2 className="text-lg font-bold mb-1">{name}</h2></Link>
           <p className="text-xs text-gray-600 mb-0.5">Organized by {host}</p>
           {/* Event Role Badge */}
           {role &&
@@ -43,7 +43,7 @@ function Event({ image, date, name, host, priceType, priceValue, attendees, role
             <p className="text-xs text-gray-600 mb-1">Price: {priceValue}</p>}
 
           <div className="flex items-center justify-between mt-2">
-            <p className="text-xs text-gray-600">{attendees ? attendees : 0} attendees</p>
+            <p className="text-xs text-gray-600">{attendees ? attendees.length : 0} attendees</p>
             <div className="flex items-center space-x-2">
               <button className="flex items-center text-gray-500 hover:text-gray-800 transition-colors">
                 <CiBookmark className="text-xl" />

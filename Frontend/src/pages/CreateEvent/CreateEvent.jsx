@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import useravatar from '../../assets/user-avatar.png'
+import Calendar from 'react-calendar';
 import TabList from '../../components/TabList/TabList';
 import TimePicker from 'react-time-picker';
 import 'react-time-picker/dist/TimePicker.css';
@@ -79,7 +80,11 @@ function CreateEvent() {
       setFormData({ ...formData, [name]: value });
     }
   };
-
+  const handleDateChange = (date) => {
+    const formattedDate = date.toLocaleDateString('en-CA'); 
+    console.log(formattedDate)
+    setFormData({ ...formData, eventDate: formattedDate });
+  };
   const handleTimeChange = (name) => (time) => {
     setFormData({ ...formData, [name]: time });
   };
@@ -267,14 +272,15 @@ function CreateEvent() {
             <h2 className="text-xl font-bold mb-4">Date and Location</h2>
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">Event Date:</label>
-              <input
-                type="date"
-                name="eventDate"
+
+              <Calendar
+                className="rounded-md border border-gray-300"
+                view="month"
+                onChange={handleDateChange}
                 value={formData.eventDate}
-                required
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                onChange={handleChange}
+
               />
+
             </div>
             <div className="flex items-center gap-3">
               <p>From</p>

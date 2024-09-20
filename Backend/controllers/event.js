@@ -2,6 +2,7 @@ import Event from "../models/event.js";
 import cloudinary from "cloudinary";
 import User from "../models/user.js";
 import Notification from "../models/notification.js";
+
 export async function handleCreateEvent(req, res) {
   try {
     const userId = req.user._id;
@@ -41,7 +42,6 @@ export async function handleCreateEvent(req, res) {
       const result = await uploadToCloudinary(req.file.buffer);
       eventThumbnailUrl = result.secure_url;
     }
-
     // a new event
     const newEvent = new Event({
       eventName,
@@ -113,17 +113,126 @@ export async function handleUserEvents(req, res) {
   try {
     const userId = req.user._id;
     const userEmail = req.user.email;
-    const createdEvents = await Event.find({ organizer: userId }).populate("organizer");
+    const createdEvents = await Event.find({ organizer: userId }).populate(
+      "organizer"
+    );
     const coOrganizedEvents = await Event.find({
       coorganizerEmail: { $in: [userEmail] },
     }).populate("organizer");
     const allEvents = [
-      ...createdEvents.map(event => ({ ...event.toObject(), role: 'Organizer' })),
-      ...coOrganizedEvents.map(event => ({ ...event.toObject(), role: 'Co-Organizer' })),
+      ...createdEvents.map((event) => ({
+        ...event.toObject(),
+        role: "Organizer",
+      })),
+      ...coOrganizedEvents.map((event) => ({
+        ...event.toObject(),
+        role: "Co-Organizer",
+      })),
     ];
     res.status(200).json(allEvents);
   } catch (error) {
     console.error("Error fetching events:", error.message);
     res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function handleGetEvents(req, res) {
+  try {
+    const { date, location, price } = req.body;
+
+    const events = await Event.find({
+      eventDate: date,
+      eventLocation: location,
+      eventType: "public",
+      eventPrice: price, // Ensure this matches your database field for visibility
+    })
+      .populate("attendees")
+      .populate("organizer")
+      .populate("coorganizerEmail");
+
+    // Send the filtered events as a JSON response
+    res.json(events);
+  } catch (error) {
+    console.error("Error fetching events:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function handleGetEventById(req, res) {
+  try {
+    const { id } = req.params;
+    if (!id) return res.status(404).json({ msg: "No id to find event" });
+
+    const event = await Event.findById(id).populate({
+      path: "organizer",
+      select: "profilePicUrl email fullname _id",
+    });
+    if (!event) return res.status(404).json({ msg: "Event not found" });
+
+    res.status(200).json(event);
+  } catch (error) {
+    console.error("Error fetching events:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+export async function handleAttendEvent(req, res) {
+  try {
+    const userId = req.user._id;
+    const { eventId } = req.body;
+    if (!eventId) return res.status(404).json({ msg: "No event found" });
+    const qrCodeData = userId.toString();
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ msg: "Event not found." });
+    }
+    const alreadyAttended = event.attendees.some((attendee) =>
+      attendee.userId.equals(userId)
+    );
+
+    if (!alreadyAttended) {
+      // Add the user and their QR code to the event's attendees list
+      event.attendees.push({
+        userId: userId,
+        qrCode: qrCodeData,
+      });
+      await event.save();
+
+
+      const user = await User.findById(userId);
+      if (user) {
+        // Check if the event is already in the user's joinedEvents array
+        if (!user.joinedEvents.includes(eventId)) {
+          user.joinedEvents.push(eventId);
+          await user.save();
+        }
+      }
+    }
+
+    res.status(200).json({
+      msg: "Successfully joined the event.",
+      attendeeCount: event.attendees.length,
+    });
+  } catch (error) {
+    console.error("Error fetching events:", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function handleGetQRData(req, res) {
+  try {
+    const { eventId } = req.params;
+    const userId = req.user._id;
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    const attendee = event.attendees.find((att) => att.userId.equals(userId));
+    if (!attendee) {
+      return res.status(404).json({ message: "User not found in attendees" });
+    }
+    res.status(200).json({ qrCode: attendee.qrCode });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 }

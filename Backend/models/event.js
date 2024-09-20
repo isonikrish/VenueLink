@@ -68,6 +68,15 @@ const eventSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: "User",
   },
+  attendees: [
+    {
+      userId: {
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+      },
+      qrCode: String,
+    },
+  ],
 });
 
 const Event = mongoose.model("Event", eventSchema);
