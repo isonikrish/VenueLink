@@ -2,7 +2,7 @@ import React from 'react';
 import { CiBookmark } from 'react-icons/ci';
 import { IoShareOutline } from 'react-icons/io5';
 import { Link } from 'react-router-dom'
-function Event({ image, date, name, host, priceType, priceValue, attendees, role, eventId }) {
+function Event({ image, date, name, host, coorganizer, priceType, priceValue, attendees, role, eventId }) {
   return (
     <div className="relative max-w-lg bg-white rounded-lg shadow-sm overflow-hidden flex items-center border p-2 mb-4">
       {/* Event Image */}
@@ -30,12 +30,14 @@ function Event({ image, date, name, host, priceType, priceValue, attendees, role
           {/* Event Role Badge */}
           {role &&
             <div className="absolute top-3 right-2">
-              <span
-                className={`px-2 py-1 text-xs font-bold rounded-md ${role === 'Organizer' ? 'bg-green-500 text-white' : 'bg-yellow-400 text-gray-800'
-                  }`}
-              >
-                {role}
-              </span>
+              <Link to={`/manage/${eventId}`}>
+                <button
+                  className={'px-2 py-1 text-xs font-bold rounded-md bg-green-500 text-white '
+                  }
+                >
+                  Manage
+                </button>
+              </Link>
             </div>
           }
           {priceType === "free" ?

@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import Event from '../../components/Event/Event';
 import axios from 'axios'
+import {MainContext} from '../../contexts/MainContext'
 function Home() {
   const [date, setDate] = useState(new Date());
   const [location, setLocation] = useState("online");
   const [price, setPrice] = useState("free");
   const [fetchedEvents, setFetchedEvents] = useState([]);
+  const {user} = useContext(MainContext);
   const handleDateChange = (selectedDate) => {
     setDate(selectedDate);
   };
@@ -41,7 +43,7 @@ function Home() {
   return (
     <div className='py-20 flex items-center justify-evenly'>
       <div className="p-6 w-1/2 max-w-md">
-        <h1 className="text-4xl font-bold mb-4">Welcome, Krish 👋</h1>
+        <h1 className="text-4xl font-bold mb-4">Welcome, <br />{user?user.fullname: ""} 👋</h1>
         <p className="text-lg text-gray-600 mb-6">Upcoming Events</p>
         <div className="calendar-container">
 

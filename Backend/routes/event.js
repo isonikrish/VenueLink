@@ -7,7 +7,7 @@ import {
   handleGetEvents,
   handleGetEventById,
   handleAttendEvent,
-  handleGetQRData
+  handleCheckIn
 } from "../controllers/event.js";
 import multer from "multer";
 const router = express.Router();
@@ -24,5 +24,5 @@ router.get("/getEvents", protectRoute, handleUserEvents);
 router.post("/publicEvents", handleGetEvents);
 router.get("/event/:id", handleGetEventById);
 router.post("/attend",protectRoute,handleAttendEvent);
-router.get("/qr-code/:eventId", protectRoute,handleGetQRData)
+router.post('/checkin', handleCheckIn);
 export default router;

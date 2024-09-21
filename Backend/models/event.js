@@ -74,7 +74,11 @@ const eventSchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: "User",
       },
-      qrCode: String,
+      code: String,
+      checkedIn: {
+        type: Boolean,
+        
+      }
     },
   ],
 });

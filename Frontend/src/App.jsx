@@ -7,6 +7,7 @@ import {Toaster} from 'react-hot-toast'
 import CreateEvent from './pages/CreateEvent/CreateEvent'
 import EventDisplay from './pages/EventDisplay/EventDisplay'
 import YourEvents from './pages/YourEvents/YourEvents'
+import ManageEvent from './pages/ManageEvent/ManageEvent'
 
 function App() {
   
@@ -19,6 +20,7 @@ function App() {
         <Route path='/create' element={<CreateEvent />}/>
         <Route path='/event/:id' element={<EventDisplay />}/>
         <Route path='/yourevents' element={<YourEvents />}/>
+        <Route path='/manage/:id' element={<ManageEvent />} />
       </Routes>
       <Toaster />
     </>

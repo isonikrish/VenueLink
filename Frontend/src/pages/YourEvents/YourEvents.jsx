@@ -46,6 +46,7 @@ function YourEvents() {
                     {yourEvents.map((yourevent) => (
                         <Event
                             key={yourevent._id}
+                            eventId={yourevent._id}
                             image={yourevent.eventThumbnail}
                             date={formatDate(yourevent.eventDate)}
                             name={yourevent.eventName}
@@ -54,6 +55,7 @@ function YourEvents() {
                             priceValue={yourevent.eventPriceValue}
                             role={yourevent.role}
                             attendees={yourevent.attendees}
+                            coorganizer={yourevent.coorganizerEmail.map((coorganizer)=>(coorganizer) )}
                         />
                     ))}
                 </div>

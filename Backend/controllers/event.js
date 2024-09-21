@@ -2,7 +2,7 @@ import Event from "../models/event.js";
 import cloudinary from "cloudinary";
 import User from "../models/user.js";
 import Notification from "../models/notification.js";
-
+import { v4 as uuidv4 } from "uuid";
 export async function handleCreateEvent(req, res) {
   try {
     const userId = req.user._id;
@@ -163,10 +163,15 @@ export async function handleGetEventById(req, res) {
     const { id } = req.params;
     if (!id) return res.status(404).json({ msg: "No id to find event" });
 
-    const event = await Event.findById(id).populate({
-      path: "organizer",
-      select: "profilePicUrl email fullname _id",
-    });
+    const event = await Event.findById(id)
+      .populate({
+        path: "organizer",
+        select: "profilePicUrl email fullname _id",
+      })
+      .populate({
+        path: "attendees.userId", // Populate userId field within attendees
+        select: "profilePicUrl email fullname _id", // Select fields from the user model
+      });
     if (!event) return res.status(404).json({ msg: "Event not found" });
 
     res.status(200).json(event);
@@ -180,7 +185,7 @@ export async function handleAttendEvent(req, res) {
     const userId = req.user._id;
     const { eventId } = req.body;
     if (!eventId) return res.status(404).json({ msg: "No event found" });
-    const qrCodeData = userId.toString();
+    const code = uuidv4().slice(0, 4).toUpperCase();
     const event = await Event.findById(eventId);
     if (!event) {
       return res.status(404).json({ msg: "Event not found." });
@@ -193,10 +198,9 @@ export async function handleAttendEvent(req, res) {
       // Add the user and their QR code to the event's attendees list
       event.attendees.push({
         userId: userId,
-        qrCode: qrCodeData,
+        code: code,
       });
       await event.save();
-
 
       const user = await User.findById(userId);
       if (user) {
@@ -218,21 +222,34 @@ export async function handleAttendEvent(req, res) {
   }
 }
 
-export async function handleGetQRData(req, res) {
+export async function handleCheckIn(req, res) {
   try {
-    const { eventId } = req.params;
-    const userId = req.user._id;
+    const { userId, eventId } = req.body;
     const event = await Event.findById(eventId);
-    if (!event) {
-      return res.status(404).json({ message: "Event not found" });
-    }
-    const attendee = event.attendees.find((att) => att.userId.equals(userId));
+    const attendee = event.attendees.find(
+      (att) => att.userId.toString() === userId
+    );
     if (!attendee) {
-      return res.status(404).json({ message: "User not found in attendees" });
+      return res.status(404).json({ message: "Attendee not found" });
     }
-    res.status(200).json({ qrCode: attendee.qrCode });
+    attendee.checkedIn = true;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Add the event ID to the checkedInEvents array
+    if (!user.checkedInEvents.includes(eventId)) {
+      user.checkedInEvents.push(eventId);
+      await user.save(); // Save the updated user document
+    }
+
+    await event.save();
+
+    // Respond to the client
+    res.status(200).json({ message: "Successfully checked in" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error(error); // Log the error for debugging
+    res.status(500).json({ message: "Server error" });
   }
 }
