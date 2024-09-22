@@ -3,6 +3,46 @@ import cloudinary from "cloudinary";
 import User from "../models/user.js";
 import Notification from "../models/notification.js";
 import { v4 as uuidv4 } from "uuid";
+import cron from "node-cron";
+import moment from "moment";
+
+
+// Function to calculate and update event status
+async function updateEventStatus(event) {
+  const now = moment(); // Current time
+  const eventStart = moment(event.eventDate).set('hour', event.eventTimeFrom.split(':')[0]).set('minute', event.eventTimeFrom.split(':')[1]);
+  const eventEnd = moment(event.eventDate).set('hour', event.eventTimeTo.split(':')[0]).set('minute', event.eventTimeTo.split(':')[1]);
+
+  let status = "Upcoming"; // Default status
+
+  if (now.isAfter(eventEnd)) {
+    status = "Ended";
+  } else if (now.isBetween(eventStart, eventEnd)) {
+    status = "Ongoing";
+  }
+
+  // Update the event status only if it has changed
+  if (event.status !== status) {
+    event.status = status;
+    await event.save();
+  }
+}
+
+// Cron job to update event statuses every minute (adjust as needed)
+cron.schedule("*/1 * * * *", async () => { 
+  try {
+    // Fetch all events
+    const events = await Event.find({});
+
+    // Loop through each event and update its status
+    for (const event of events) {
+      await updateEventStatus(event);
+    }
+  } catch (error) {
+    console.error("Error updating event statuses:", error.message);
+  }
+});
+
 export async function handleCreateEvent(req, res) {
   try {
     const userId = req.user._id;
@@ -200,6 +240,12 @@ export async function handleAttendEvent(req, res) {
         userId: userId,
         code: code,
       });
+      const newNotification = new Notification({
+        to: userId,
+        event: eventId,
+        type: "attended"
+      })
+      await newNotification.save();
       await event.save();
 
       const user = await User.findById(userId);

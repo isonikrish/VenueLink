@@ -8,6 +8,7 @@ import CreateEvent from './pages/CreateEvent/CreateEvent'
 import EventDisplay from './pages/EventDisplay/EventDisplay'
 import YourEvents from './pages/YourEvents/YourEvents'
 import ManageEvent from './pages/ManageEvent/ManageEvent'
+import Notifications from './pages/Notifications/Notifications'
 
 function App() {
   
@@ -21,6 +22,7 @@ function App() {
         <Route path='/event/:id' element={<EventDisplay />}/>
         <Route path='/yourevents' element={<YourEvents />}/>
         <Route path='/manage/:id' element={<ManageEvent />} />
+        <Route path='/notifications' element={<Notifications />}/>
       </Routes>
       <Toaster />
     </>

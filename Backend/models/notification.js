@@ -14,7 +14,7 @@ const notificationSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["co-organizer added", "event update"],
+      enum: ["co-organizer added", "event update", "attended"],
       required: true,
     },
   },

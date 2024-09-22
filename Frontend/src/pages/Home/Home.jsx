@@ -37,6 +37,14 @@ function Home() {
       console.error('Error fetching events:', error.message);
     }
   };
+  function convertTo12HourFormat(time) {
+    let [hours, minutes] = time.split(':');
+    hours = parseInt(hours, 10);
+
+    const ampm = hours >= 12 ? 'PM' : 'AM'; // Check if it's AM or PM
+    hours = hours % 12 || 12; // Convert 0 (midnight) to 12 for 12-hour format
+    return `${hours}:${minutes} ${ampm}`;
+  }
   useEffect(() => {
     fetchEvents(); // Fetch events when component mounts or filters change
   }, [date, location, price]);
@@ -90,6 +98,9 @@ function Home() {
                   priceValue={event.eventPriceValue}
                   attendees={event.attendees}
                   eventId={event._id}
+                  status={event.status}
+                  eventTimeFrom={convertTo12HourFormat(event.eventTimeFrom)}
+                  eventTimeTo={convertTo12HourFormat(event.eventTimeTo)}
                 />
               );
             })

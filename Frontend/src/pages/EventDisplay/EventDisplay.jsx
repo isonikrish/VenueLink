@@ -14,11 +14,11 @@ import UserAvatar from '../../assets/user-avatar.png'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import AttendEvent from '../../components/AttendEvent';
-import {MainContext} from '../../contexts/MainContext'
+import { MainContext } from '../../contexts/MainContext'
 function EventDisplay() {
   const { id } = useParams();
   const [event, setEvent] = useState();
-  const {user} = useContext(MainContext);
+  const { user } = useContext(MainContext);
   async function fetchEvent() {
     const response = await axios.get(`http://localhost:9294/api/event/event/${id}`, {
       withCredentials: true,
@@ -40,6 +40,8 @@ function EventDisplay() {
   useEffect(() => {
     fetchEvent();
   }, [id])
+
+  
   if (!event) {
     return <div>Loading...</div>; // Show loading state while event data is being fetched
   }
@@ -127,9 +129,24 @@ function EventDisplay() {
                 </div>
               </div>
             </div>
+            {event.status === "Ongoing" && <button
+              className="inline-block bg-green-600 text-white py-3 px-6 rounded-full shadow-lg"
+            >
+              <div className="flex items-center">
 
-            <AttendEvent user={user} event={event}/>
-            
+                Ongoing
+              </div>
+            </button>}
+            {event.status === "Ended" && <button
+              className="inline-block bg-red-600 text-white py-3 px-6 rounded-full shadow-lg"
+            >
+              <div className="flex items-center">
+
+                Ended
+              </div> </button>}
+            {event.status === "Upcoming" && <AttendEvent user={user} event={event} />}
+
+
           </div>
         </div>
       </div>

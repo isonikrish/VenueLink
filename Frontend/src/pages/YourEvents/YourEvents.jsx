@@ -7,8 +7,8 @@ function YourEvents() {
     const [yourEvents, setYourEvents] = useState([]);
 
     useEffect(() => {
-        const fetchEvents = async() =>{
-            if(user){
+        const fetchEvents = async () => {
+            if (user) {
                 try {
                     const response = await axios.get(`http://localhost:9294/api/event/getEvents`, { withCredentials: true });
                     setYourEvents(response.data);
@@ -28,7 +28,14 @@ function YourEvents() {
     const formatDate = (dateString) => {
         return dateString.slice(0, 10); // Slice the first 10 characters of the date string (YYYY-MM-DD)
     };
+    function convertTo12HourFormat(time) {
+        let [hours, minutes] = time.split(':');
+        hours = parseInt(hours, 10);
 
+        const ampm = hours >= 12 ? 'PM' : 'AM'; // Check if it's AM or PM
+        hours = hours % 12 || 12; // Convert 0 (midnight) to 12 for 12-hour format
+        return `${hours}:${minutes} ${ampm}`;
+    }
     return (
         <div className="max-w-7xl mx-auto p-4">
             <header className="mb-6 text-center">
@@ -55,7 +62,10 @@ function YourEvents() {
                             priceValue={yourevent.eventPriceValue}
                             role={yourevent.role}
                             attendees={yourevent.attendees}
-                            coorganizer={yourevent.coorganizerEmail.map((coorganizer)=>(coorganizer) )}
+                            coorganizer={yourevent.coorganizerEmail.map((coorganizer) => (coorganizer))}
+                            status={yourevent.status}
+                            eventTimeFrom={convertTo12HourFormat(yourevent.eventTimeFrom)}
+                            eventTimeTo={convertTo12HourFormat(yourevent.eventTimeTo)}
                         />
                     ))}
                 </div>

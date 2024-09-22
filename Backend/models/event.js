@@ -81,6 +81,11 @@ const eventSchema = new mongoose.Schema({
       }
     },
   ],
+  status: {
+    type: String,
+    enum: ["Upcoming", "Ongoing", "Ended"],
+    default: "Upcoming"
+  },
 });
 
 const Event = mongoose.model("Event", eventSchema);
