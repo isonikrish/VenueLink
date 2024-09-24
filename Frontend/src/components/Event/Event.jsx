@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { CiBookmark } from 'react-icons/ci';
 import { Link } from 'react-router-dom'
 import { IoShareOutline } from 'react-icons/io5';
 import Share from '../Share';
+import {MainContext} from '../../contexts/MainContext'
 function Event({ image, date, name, host, coorganizer, priceType, priceValue, attendees, role, eventId, status, eventTimeFrom, eventTimeTo }) {
   const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [sharePopup, setSharePopup] = useState(false);
+  const {bookmarkEvent} = useContext(MainContext)
   useEffect(() => {
     if (status === "Upcoming") {
       const eventStartTime = new Date(`${date} ${eventTimeFrom}`).getTime();
@@ -121,7 +123,7 @@ function Event({ image, date, name, host, coorganizer, priceType, priceValue, at
           <div className="flex items-center justify-between mt-2">
             <p className="text-xs text-gray-600">{attendees ? attendees.length : 0} attendees</p>
             <div className="flex items-center space-x-2">
-              <button className="flex items-center text-gray-500 hover:text-gray-800 transition-colors">
+              <button className="flex items-center text-gray-500 hover:text-gray-800 transition-colors" onClick={()=>bookmarkEvent(eventId)}>
                 <CiBookmark className="text-xl" />
               </button>
               <button className="flex items-center text-gray-500 hover:text-gray-800 transition-colors" onClick={toggleSharePopup}>

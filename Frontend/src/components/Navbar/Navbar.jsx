@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { IoIosSearch } from "react-icons/io";
 import { CiBookmark } from "react-icons/ci";
 import { IoMdArrowDropdown } from "react-icons/io";
@@ -16,7 +16,7 @@ import Dropdown from "../Dropdown";
 function Navbar() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [eventDropDown, seteventDropDown] = useState(false);
-    const { user } = useContext(MainContext);
+    const { user, notifications, bookmarkedEvents, logout} = useContext(MainContext);
     const navigate = useNavigate();
     const handleToggleDropdown = () => {
         setIsDropdownOpen((prevState) => !prevState);
@@ -25,30 +25,18 @@ function Navbar() {
         seteventDropDown((prevState) => !prevState)
     }
 
-    const logout = async () => {
-        try {
-            const res = await axios.post('http://localhost:9294/api/auth/logout', {}, {
-                withCredentials: true,
-            });
-            if (res.status === 200) {
-                toast.success("Logged Out Successfully")
-                navigate('/')
-            }
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-        }
-    }
+    
     const dropdownOptions = [
         { label: 'Your Events', action: () => navigate('/yourevents') },
         { divider: true },
-        { label: 'View Profile', action: () => navigate('/profile') },
+        { label: 'Attended Events', action: () => navigate('/attended') },
         user
             ? { label: 'Logout', action: logout }
             : { label: 'Login', action: () => navigate('/') }
     ];
     const createEventOptions = [
         { label: 'Create a new event', action: () => navigate('/create'), icon: <LuVideo className="text-xl" /> },
-        { label: 'Copy a past event', action: () => navigate('/events'), icon: <FaRegCopy /> },
+
     ];
     return (
         <nav className="flex justify-between items-center px-10 py-4 bg-white border-b shadow-md">
@@ -56,7 +44,7 @@ function Navbar() {
                 <h3>Venue Link</h3>
             </Link>
 
-            {/* Search bar */}
+            {/* Search bar
             <div className="flex items-center space-x-4 border border-gray-300 rounded-lg bg-gray-50 px-2">
                 <input
                     type="text"
@@ -69,7 +57,7 @@ function Navbar() {
                     className="p-2 outline-none w-100 focus:ring-"
                 />
                 <IoIosSearch className="text-2xl text-gray-500 cursor-pointer" />
-            </div>
+            </div> */}
 
 
 
@@ -84,12 +72,24 @@ function Navbar() {
                 </div>
 
                 {/* Bookmark */}
-                <Link to="/bookmarks" className="text-gray-500 hover:text-gray-800">
+                <Link to="/bookmarks" className=" relative text-gray-500 hover:text-gray-800">
                     <CiBookmark className="text-2xl" />
+                    {bookmarkedEvents.length > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                            {bookmarkedEvents.length}
+                        </span>
+                    )}
                 </Link>
                 {/* Notifications */}
-                <Link to="/notifications" className="text-gray-500 hover:text-gray-800">
+                <Link to="/notifications" className="relative text-gray-500 hover:text-gray-800">
                     <IoIosNotificationsOutline className="text-2xl" />
+
+                    {/* Display notification count */}
+                    {notifications.length > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                            {notifications.length}
+                        </span>
+                    )}
                 </Link>
 
                 {/* Profile Dropdown */}

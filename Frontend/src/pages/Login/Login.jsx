@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { MainContext } from '../../contexts/MainContext'
 function Login() {
   const navigate = useNavigate();
-  const { user } = useContext(MainContext)
+  const { user, handleLogin } = useContext(MainContext)
   useEffect(() => {
     if (user) {
       navigate('/home')
@@ -30,18 +30,7 @@ function Login() {
     }));
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    const response = await axios.post('http://localhost:9294/api/auth/login', formData, {
-      withCredentials: true,
-    })
-    if (response.status === 201) {
-      toast.success('Logged In');
-      navigate('/home')
-    } else {
-      toast.error('Login failed');
-    }
-  };
+  
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -62,7 +51,7 @@ function Login() {
           {isLogin ? 'Login' : 'Sign Up'}
         </h2>
 
-        <form onSubmit={isLogin ? handleLogin : handleSignup}>
+        <form onSubmit={isLogin ? (e) => handleLogin(e, formData) : handleSignup}>
           {isLogin ? (
             <>
               <input

@@ -1,10 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { MainContext } from '../../contexts/MainContext';
 import Event from '../../components/Event/Event';
+import Loader from '../../components/Loader'; // Import Loader
 import axios from 'axios';
+
 function YourEvents() {
     const { user } = useContext(MainContext);
     const [yourEvents, setYourEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -14,28 +17,34 @@ function YourEvents() {
                     setYourEvents(response.data);
                 } catch (error) {
                     console.error('Error fetching events:', error);
+                } finally {
+                    setLoading(false); // Set loading to false once the fetch is complete
                 }
+            } else {
+                setLoading(false); // If user is not available, stop loading
             }
-        }
+        };
         fetchEvents();
-        //
     }, [user]);
 
-    if (!user) {
-        return <div className="flex justify-center items-center h-screen">Loading...</div>; // Show loading state if user is not yet available
+    // Show loader while data is still being fetched
+    if (loading) {
+        return <Loader />; // Return Loader component while loading is true
     }
 
     const formatDate = (dateString) => {
         return dateString.slice(0, 10); // Slice the first 10 characters of the date string (YYYY-MM-DD)
     };
-    function convertTo12HourFormat(time) {
+
+    const convertTo12HourFormat = (time) => {
         let [hours, minutes] = time.split(':');
         hours = parseInt(hours, 10);
 
         const ampm = hours >= 12 ? 'PM' : 'AM'; // Check if it's AM or PM
         hours = hours % 12 || 12; // Convert 0 (midnight) to 12 for 12-hour format
         return `${hours}:${minutes} ${ampm}`;
-    }
+    };
+
     return (
         <div className="max-w-7xl mx-auto p-4">
             <header className="mb-6 text-center">
@@ -62,7 +71,7 @@ function YourEvents() {
                             priceValue={yourevent.eventPriceValue}
                             role={yourevent.role}
                             attendees={yourevent.attendees}
-                            coorganizer={yourevent.coorganizerEmail.map((coorganizer) => (coorganizer))}
+                            coorganizer={yourevent.coorganizerEmail.map((coorganizer) => coorganizer)}
                             status={yourevent.status}
                             eventTimeFrom={convertTo12HourFormat(yourevent.eventTimeFrom)}
                             eventTimeTo={convertTo12HourFormat(yourevent.eventTimeTo)}

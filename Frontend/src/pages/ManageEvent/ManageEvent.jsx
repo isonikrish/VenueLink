@@ -68,26 +68,30 @@ function ManageEvent() {
             {/* Attendee List */}
             <h2 className="mt-6 text-2xl font-semibold text-gray-800">Attendees</h2>
             <ul className="space-y-4">
-                {event.attendees.map((attendee) => (
-                    <li key={attendee.userId._id} className="flex items-center justify-between p-4 bg-gray-100 rounded-md shadow transition">
-                        <div className='flex items-center'>
-                            <img
-                                src={attendee.userId.profilePicUrl || useravatar}
-                                alt={attendee.userId.fullname}
-                                className="w-12 h-12 rounded-full mr-4"
-                            />
-                            <div>
-                                <span className="block font-medium text-gray-800">{attendee.userId.fullname}</span>
-                                <span className="block text-sm text-gray-500">{attendee.userId.email}</span>
+                {event.attendees.length === 0 ? <div className='text-zinc-800'>No attendees found</div> :
+
+                    event.attendees.map((attendee) => (
+                        <li key={attendee.userId._id} className="flex items-center justify-between p-4 bg-gray-100 rounded-md shadow transition">
+                            <div className='flex items-center'>
+                                <img
+                                    src={attendee.userId.profilePicUrl || useravatar}
+                                    alt={attendee.userId.fullname}
+                                    className="w-12 h-12 rounded-full mr-4"
+                                />
+                                <div>
+                                    <span className="block font-medium text-gray-800">{attendee.userId.fullname}</span>
+                                    <span className="block text-sm text-gray-500">{attendee.userId.email}</span>
+                                </div>
+
                             </div>
+                            <span className="block text-2xl text-blue-500">{attendee.code}</span>
+                            {attendee.checkedIn ? <button className='border bg-green-500 p-3 rounded-2xl text-white' onClick={() => toast.error("Already Checked In")}>Checked In</button>
+                                : <button className='border bg-blue-500 p-3 rounded-2xl text-white ' onClick={() => handleCheckIn(attendee.userId._id, event._id)}>Check In</button>}
 
-                        </div>
-                        <span className="block text-2xl text-blue-500">{attendee.code}</span>
-                        {attendee.checkedIn ? <button className='border bg-green-500 p-3 rounded-2xl text-white' onClick={()=>toast.error("Already Checked In")}>Checked In</button>
-                            : <button className='border bg-blue-500 p-3 rounded-2xl text-white ' onClick={() => handleCheckIn(attendee.userId._id, event._id)}>Check In</button>}
+                        </li>
+                    ))
 
-                    </li>
-                ))}
+                }
             </ul>
         </div>
     );

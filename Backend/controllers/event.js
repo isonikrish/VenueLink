@@ -6,12 +6,15 @@ import { v4 as uuidv4 } from "uuid";
 import cron from "node-cron";
 import moment from "moment";
 
-
 // Function to calculate and update event status
 async function updateEventStatus(event) {
   const now = moment(); // Current time
-  const eventStart = moment(event.eventDate).set('hour', event.eventTimeFrom.split(':')[0]).set('minute', event.eventTimeFrom.split(':')[1]);
-  const eventEnd = moment(event.eventDate).set('hour', event.eventTimeTo.split(':')[0]).set('minute', event.eventTimeTo.split(':')[1]);
+  const eventStart = moment(event.eventDate)
+    .set("hour", event.eventTimeFrom.split(":")[0])
+    .set("minute", event.eventTimeFrom.split(":")[1]);
+  const eventEnd = moment(event.eventDate)
+    .set("hour", event.eventTimeTo.split(":")[0])
+    .set("minute", event.eventTimeTo.split(":")[1]);
 
   let status = "Upcoming"; // Default status
 
@@ -29,7 +32,7 @@ async function updateEventStatus(event) {
 }
 
 // Cron job to update event statuses every minute (adjust as needed)
-cron.schedule("*/1 * * * *", async () => { 
+cron.schedule("*/1 * * * *", async () => {
   try {
     // Fetch all events
     const events = await Event.find({});
@@ -107,23 +110,26 @@ export async function handleCreateEvent(req, res) {
       await user.save();
     }
 
-    if (coorganizerEmail && Array.isArray(coorganizerEmail)) {
-      for (const email of coorganizerEmail) {
-        const coorganizer = await User.findOne({ email: email.trim() });
-        if (coorganizer) {
-          const newNotification = new Notification({
-            to: coorganizer._id,
-            event: savedEvent._id,
-            type: "co-organizer added",
-          });
-          await newNotification.save();
-        } else {
-          console.log(`Co-organizer with email ${email.trim()} not found.`);
-        }
+    const emails = Array.isArray(coorganizerEmail)
+      ? coorganizerEmail
+      : [coorganizerEmail];
+    for (const email of emails) {
+      const trimmedEmail = email.trim().toLowerCase();
+      const coorganizer = await User.findOne({ email: trimmedEmail });
+
+      if (coorganizer) {
+
+        const newNotification = new Notification({
+          to: coorganizer._id,
+          event: savedEvent._id,
+          type: "co-organizer added",
+        });
+        await newNotification.save();
+      } else {
+        console.log(`Co-organizer with email ${trimmedEmail} not found.`);
       }
-    } else {
-      console.log(`Co-organizer with email ${email.trim()} not found.`);
     }
+
     res.status(201).json(savedEvent);
   } catch (error) {
     res.status(500).json({ msg: "Internal server error" });
@@ -243,8 +249,8 @@ export async function handleAttendEvent(req, res) {
       const newNotification = new Notification({
         to: userId,
         event: eventId,
-        type: "attended"
-      })
+        type: "attended",
+      });
       await newNotification.save();
       await event.save();
 

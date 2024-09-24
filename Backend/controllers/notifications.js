@@ -7,7 +7,7 @@ export async function handleMyNotifications(req, res) {
       return res.status(400).json({ message: "User ID is required" });
     }
 
-    const notifications = await Notification.findOne({ to: userId }).populate("event");
+    const notifications = await Notification.find({ to: userId }).populate("event");
 
     if (!notifications || notifications.length === 0) {
       return res.status(404).json({ message: "No notifications found" });

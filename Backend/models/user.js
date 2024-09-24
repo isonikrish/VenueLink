@@ -32,20 +32,17 @@ const userSchema = new mongoose.Schema(
       },
     ],
     joinedEvents: [
-      {
-        eventId: { type: mongoose.Schema.Types.ObjectId, ref: "Event" }, // Reference to the event
-        checkedInAt: { type: Date }, // Date of check-in
-      },
+      { type: mongoose.Schema.Types.ObjectId, ref: "Event" }, // Reference to the event
     ],
     createdEvents: [
       {
-        type: mongoose.Schema.Types.ObjectId, ref: "Event" , // Reference to 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Event", // Reference to
       },
-    ]
+    ],
   },
   { timestamps: true }
 );
-
 
 const User = mongoose.model("User", userSchema);
 

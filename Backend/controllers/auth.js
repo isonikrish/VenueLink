@@ -21,7 +21,9 @@ export async function handleSignup(req, res) {
     }
 
     if (password.length < 6) {
-      return res.status(400).json({ msg: "Password must be at least 6 characters long" });
+      return res
+        .status(400)
+        .json({ msg: "Password must be at least 6 characters long" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -76,13 +78,13 @@ export async function handleLogin(req, res) {
 }
 export async function handleLogout(req, res) {
   try {
-    res.cookie("user","",{
+    res.cookie("user", "", {
       maxAge: 0,
       httpOnly: true,
       sameSite: "strict",
       secure: process.env.NODE_ENV !== "development",
-      path: '/',
-  });
+      path: "/",
+    });
     res.status(200).json({ msg: "User logged out" });
   } catch (error) {
     res.status(500).json({ msg: "Internal server error" });
@@ -92,10 +94,14 @@ export async function handleLogout(req, res) {
 export async function getMe(req, res) {
   try {
     const userId = req.user._id;
-    const user = await User.findById(userId).populate({
-      path: 'createdEvents', // Populate the createdEvents first
-      populate: { path: 'organizer', select: 'fullname email profilePicUrl' }
-    }).select("-password");
+    const user = await User.findById(userId)
+      .populate({
+        path: "createdEvents", // Populate the createdEvents first
+        populate: { path: "organizer", select: "fullname email profilePicUrl" },
+      })
+      .populate({
+        path: "joinedEvents", // Populate the joinedEvents directly
+    });
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ msg: "Internal server error" });

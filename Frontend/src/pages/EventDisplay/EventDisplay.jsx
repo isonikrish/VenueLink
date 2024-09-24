@@ -15,10 +15,15 @@ import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import AttendEvent from '../../components/AttendEvent';
 import { MainContext } from '../../contexts/MainContext'
+import Share from '../../components/Share';
+import Loader from '../../components/Loader'
 function EventDisplay() {
   const { id } = useParams();
   const [event, setEvent] = useState();
   const { user } = useContext(MainContext);
+  const [sharePopup, setSharePopup] = useState(false)
+  const {bookmarkEvent} = useContext(MainContext)
+
   async function fetchEvent() {
     const response = await axios.get(`http://localhost:9294/api/event/event/${id}`, {
       withCredentials: true,
@@ -40,10 +45,13 @@ function EventDisplay() {
   useEffect(() => {
     fetchEvent();
   }, [id])
-
-  
+    const url = `https://localhost:5173/event/${id}`
+  function toggleSharePopup(e) {
+    e.stopPropagation();
+    setSharePopup(prev => !prev);
+}
   if (!event) {
-    return <div>Loading...</div>; // Show loading state while event data is being fetched
+    return <Loader />; // Show loading state while event data is being fetched
   }
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
@@ -62,10 +70,11 @@ function EventDisplay() {
           <div className="md:w-1/2 p-8 relative">
             {/* Share and Bookmark Icons */}
             <div className="absolute top-4 right-4 flex flex-col space-y-5">
-              <button className="flex items-center text-blue-600 hover:text-blue-800">
+              <button className="flex items-center text-blue-600 hover:text-blue-800"onClick={toggleSharePopup}>
                 <FaShareAlt className="mr-2 text-2xl" />
               </button>
-              <button className="flex items-center text-blue-600 hover:text-blue-800">
+              {sharePopup && <Share url={url} onClose={() => setSharePopup(false)}/>}
+              <button className="flex items-center text-blue-600 hover:text-blue-800" onClick={()=>bookmarkEvent(id)}>
                 <FaRegBookmark className="mr-2 text-2xl" />
               </button>
             </div>
@@ -117,16 +126,22 @@ function EventDisplay() {
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-gray-800 mb-2">Attendees</h2>
               <div className="flex items-center space-x-4">
-                <div className="flex items-center">
-                  <img
-                    src={UserAvatar}
-                    alt="Alice"
-                    className="w-10 h-10 rounded-full object-cover border border-gray-300 -ml-2"
-                  />
-                  <span className="text-gray-500 text-sm font-medium ml-4">
-                    + 2k Others
-                  </span>
-                </div>
+              <div className="flex items-center">
+                {event.attendees.map((attendee)=>(
+                    
+                  
+                    <img
+                      src={attendee.profilePicUrl || UserAvatar}
+                      alt="Alice"
+                      className="w-10 h-10 rounded-full object-cover border border-gray-300 -ml-2"
+                    />
+                  ))}
+                    <span className="text-gray-500 text-sm font-medium ml-4">
+                      {event.attendees.length === 0 ? "No Attendees for this event. Be the first one!": event.attendees.length}
+                    </span>
+                  </div>
+             
+                
               </div>
             </div>
             {event.status === "Ongoing" && <button

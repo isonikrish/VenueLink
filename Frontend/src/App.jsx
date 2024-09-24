@@ -9,6 +9,8 @@ import EventDisplay from './pages/EventDisplay/EventDisplay'
 import YourEvents from './pages/YourEvents/YourEvents'
 import ManageEvent from './pages/ManageEvent/ManageEvent'
 import Notifications from './pages/Notifications/Notifications'
+import Bookmarks from './pages/Bookmarks/Bookmarks'
+import AttendedEvents from './pages/AttendedEvents/AttendedEvents'
 
 function App() {
   
@@ -23,6 +25,8 @@ function App() {
         <Route path='/yourevents' element={<YourEvents />}/>
         <Route path='/manage/:id' element={<ManageEvent />} />
         <Route path='/notifications' element={<Notifications />}/>
+        <Route path='/bookmarks' element={<Bookmarks />}/>
+        <Route path='/attended' element={<AttendedEvents />}/>
       </Routes>
       <Toaster />
     </>
