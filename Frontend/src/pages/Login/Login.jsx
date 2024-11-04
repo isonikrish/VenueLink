@@ -3,10 +3,12 @@ import axios from 'axios'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { MainContext } from '../../contexts/MainContext'
+import Loader from '../../components/Loader';
 function Login() {
   const navigate = useNavigate();
   const { user, handleLogin } = useContext(MainContext)
   useEffect(() => {
+
     if (user) {
       navigate('/home')
     }

@@ -1,13 +1,13 @@
 import React, { useContext } from 'react';
 import { MainContext } from '../../contexts/MainContext';
 import Event from '../../components/Event/Event';
-import Loader from '../../components/Loader'; // Import Loader
+import Loader from '../../components/Loader';
 
 function AttendedEvents() {
-    const { user } = useContext(MainContext); // Get user from context
+    const { user } = useContext(MainContext);
 
     const formatDate = (dateString) => {
-        return dateString.slice(0, 10); // Slice the first 10 characters of the date string (YYYY-MM-DD)
+        return dateString.slice(0, 10);
     };
 
     const convertTo12HourFormat = (time) => {
@@ -19,9 +19,9 @@ function AttendedEvents() {
         return `${hours}:${minutes} ${ampm}`;
     };
 
-    // Safety check for user and joinedEvents
+
     if (!user || !user.joinedEvents) {
-        return <Loader />; // Show loader while fetching user data
+        return <Loader />;
     }
 
     return (
@@ -31,25 +31,25 @@ function AttendedEvents() {
             </header>
 
             {user.joinedEvents.length === 0 ? (
-                <div className="text-center text-gray-600 mt-12">
-                    <h2 className="text-2xl font-semibold mb-2">No attended events Found</h2>
-                    <p className="text-lg">You haven't attended any events yet. Start organizing now!</p>
+                <div className="text-center text-gray-500 mt-12 h-[60vh] flex justify-center flex-col">
+                    <h2 className="text-xl font-medium mb-2">No Events Found</h2>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {user.joinedEvents.map((yourevent) => (
                         <Event
-                            key={yourevent._id} // Use the event's _id directly
-                            eventId={yourevent._id} // Pass the eventId for further actions
-                            image={yourevent.eventThumbnail} // Access the event details
-                            date={formatDate(yourevent.eventDate)} // Format the event date
-                            name={yourevent.eventName} // Access the event name
-                            host={yourevent.organizer.fullname} // Access the host details
-                            priceType={yourevent.eventPrice} // Access price type
-                            priceValue={yourevent.eventPriceValue} // Access price value
-                            attendees={yourevent.attendees} // Access attendees
-                            eventTimeFrom={convertTo12HourFormat(yourevent.eventTimeFrom)} // Format event start time
-                            eventTimeTo={convertTo12HourFormat(yourevent.eventTimeTo)} // Format event end time
+                            key={yourevent._id}
+                            eventId={yourevent._id}
+                            image={yourevent.eventThumbnail}
+                            date={formatDate(yourevent.eventDate)}
+                            name={yourevent.eventName}
+                            host={yourevent.organizer.fullname}
+                            priceType={yourevent.eventPrice}
+                            priceValue={yourevent.eventPriceValue}
+                            attendees={yourevent.attendees}
+                            eventTimeFrom={convertTo12HourFormat(yourevent.eventTimeFrom)}
+                            eventTimeTo={convertTo12HourFormat(yourevent.eventTimeTo)}
+                            status={yourevent.status}
                         />
                     ))}
                 </div>

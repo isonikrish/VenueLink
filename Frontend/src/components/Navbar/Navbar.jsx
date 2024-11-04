@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { IoIosSearch } from "react-icons/io";
+import { IoIosSearch, IoMdArrowDropdown, IoIosNotificationsOutline, IoIosArrowDown } from "react-icons/io";
 import { CiBookmark } from "react-icons/ci";
-import { IoMdArrowDropdown } from "react-icons/io";
-import { IoIosNotificationsOutline } from "react-icons/io";
+
+
 import { LuVideo } from "react-icons/lu";
-import { IoIosArrowDown } from "react-icons/io";
-import { FaRegCopy } from "react-icons/fa6";
+import { IoLogOutOutline, IoLogInOutline } from "react-icons/io5";
+import { AiOutlineCalendar, AiOutlineCheckCircle } from "react-icons/ai";
+
 import { Link, useNavigate } from "react-router-dom";
 import { MainContext } from '../../contexts/MainContext'
 import useravatar from "../../assets/user-avatar.png";
@@ -16,7 +17,7 @@ import Dropdown from "../Dropdown";
 function Navbar() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [eventDropDown, seteventDropDown] = useState(false);
-    const { user, notifications, bookmarkedEvents, logout} = useContext(MainContext);
+    const { user, notifications, bookmarkedEvents, logout } = useContext(MainContext);
     const navigate = useNavigate();
     const handleToggleDropdown = () => {
         setIsDropdownOpen((prevState) => !prevState);
@@ -25,14 +26,14 @@ function Navbar() {
         seteventDropDown((prevState) => !prevState)
     }
 
-    
+
     const dropdownOptions = [
-        { label: 'Your Events', action: () => navigate('/yourevents') },
+        { label: 'Your Events', action: () => navigate('/yourevents'), icon: <AiOutlineCalendar className="text-xl" /> },
         { divider: true },
-        { label: 'Attended Events', action: () => navigate('/attended') },
+        { label: 'Attended Events', action: () => navigate('/attended'), icon: <AiOutlineCheckCircle className="text-xl" /> },
         user
-            ? { label: 'Logout', action: logout }
-            : { label: 'Login', action: () => navigate('/') }
+            ? { label: 'Logout', action: logout, icon: <IoLogOutOutline className="text-xl" /> }
+            : { label: 'Login', action: () => navigate('/'), icon: <IoLogInOutline className="text-xl" /> }
     ];
     const createEventOptions = [
         { label: 'Create a new event', action: () => navigate('/create'), icon: <LuVideo className="text-xl" /> },
@@ -40,11 +41,11 @@ function Navbar() {
     ];
     return (
         <nav className="flex justify-between items-center px-10 py-4 bg-white border-b shadow-md">
-            <Link to="/" className="text-2xl font-bold text-blue-500">
+            <Link to="/home" className="text-2xl font-bold text-blue-500">
                 <h3>Venue Link</h3>
             </Link>
 
-            {/* Search bar
+            
             <div className="flex items-center space-x-4 border border-gray-300 rounded-lg bg-gray-50 px-2">
                 <input
                     type="text"
@@ -57,7 +58,7 @@ function Navbar() {
                     className="p-2 outline-none w-100 focus:ring-"
                 />
                 <IoIosSearch className="text-2xl text-gray-500 cursor-pointer" />
-            </div> */}
+            </div>
 
 
 

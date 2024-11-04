@@ -5,11 +5,11 @@ import Event from '../../components/Event/Event';
 import axios from 'axios'
 import {MainContext} from '../../contexts/MainContext'
 function Home() {
-  const [date, setDate] = useState(new Date());
+  
   const [location, setLocation] = useState("online");
   const [price, setPrice] = useState("free");
   const [fetchedEvents, setFetchedEvents] = useState([]);
-  const {user} = useContext(MainContext);
+  const {user,date,setDate} = useContext(MainContext);
   const handleDateChange = (selectedDate) => {
     setDate(selectedDate);
   };
@@ -105,7 +105,9 @@ function Home() {
               );
             })
           ) : (
-            <p>No events found for the selected filters.</p>
+            <div className="text-gray-500 mt-12 h-[20vh] flex">
+               <h2 className="text-xl font-medium mb-2">No Events Found</h2>
+             </div>
           )}
         </div>
 

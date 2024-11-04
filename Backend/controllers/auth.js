@@ -100,8 +100,9 @@ export async function getMe(req, res) {
         populate: { path: "organizer", select: "fullname email profilePicUrl" },
       })
       .populate({
-        path: "joinedEvents", // Populate the joinedEvents directly
-    });
+        path: "joinedEvents",populate: { path: "organizer", select: "fullname email profilePicUrl" },
+      } 
+    );
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ msg: "Internal server error" });

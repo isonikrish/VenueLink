@@ -1,5 +1,5 @@
 import './App.css'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, useNavigate } from 'react-router-dom'
 import Home from './pages/Home/Home'
 import Navbar from './components/Navbar/Navbar'
 import Login from './pages/Login/Login'
@@ -13,7 +13,6 @@ import Bookmarks from './pages/Bookmarks/Bookmarks'
 import AttendedEvents from './pages/AttendedEvents/AttendedEvents'
 
 function App() {
-  
   return (
     <>
       <Navbar />

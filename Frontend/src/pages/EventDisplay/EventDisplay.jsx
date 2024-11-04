@@ -159,7 +159,7 @@ function EventDisplay() {
 
                 Ended
               </div> </button>}
-            {event.status === "Upcoming" && <AttendEvent user={user} event={event} />}
+            {event.status === "Upcoming" && <AttendEvent user={user} event={event} fetchEvent={fetchEvent}/>}
 
 
           </div>

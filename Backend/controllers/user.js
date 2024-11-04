@@ -41,7 +41,14 @@ export async function getBookmarkedEvents(req, res) {
       const userId = req.user._id; // Assuming you have middleware that sets req.user
       
       // Find the user and populate their bookmarked events
-      const user = await User.findById(userId).populate('bookmarkedEvents');
+      const user = await User.findById(userId).populate({
+        path: 'bookmarkedEvents',
+        populate: {
+          path: 'organizer',
+          select: 'fullname email', 
+        },
+      });
+    
       
       if (!user) {
           return res.status(404).json({ message: 'User not found' });

@@ -5,7 +5,7 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import Ticket from './Ticket';
 
-function AttendEvent({ user, event }) {
+function AttendEvent({ user, event , fetchEvent}) {
     const [attended, setAttended] = useState(false);
     const [loading, setLoading] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -52,6 +52,7 @@ function AttendEvent({ user, event }) {
 
             if (response.status === 200) {
                 toast.success("Successfully joined the event!");
+                fetchEvent();
                 checkAttendedOrNot(); // Re-check attendance status after joining
             }
         } catch (error) {

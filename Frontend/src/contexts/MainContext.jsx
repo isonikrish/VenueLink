@@ -7,7 +7,9 @@ export const MainContext = createContext();
 export const MainContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [notifications, setNotifications] = useState([]);
-  const [bookmarkedEvents, setBookmarkedEvents] = useState([])
+  const [bookmarkedEvents, setBookmarkedEvents] = useState([]);
+  const [yourEvents, setYourEvents] = useState([]);
+  const [date, setDate] = useState(new Date());
   const navigate = useNavigate();
   useEffect(() => {
     async function getUser() {
@@ -68,7 +70,12 @@ export const MainContextProvider = ({ children }) => {
         withCredentials: true,
       });
 
-      setNotifications(response.data); // Assuming this is an array of notifications
+      if (response.status === 200) {
+        setNotifications(response.data);
+      } else {
+        setNotifications([])
+        console.error("Failed to fetch notifications", response);
+      }
     } catch (error) {
       console.error('Error fetching notifications:', error);
     }
@@ -77,6 +84,7 @@ export const MainContextProvider = ({ children }) => {
   useEffect(() => {
     fetchNotifications();
   }, []);
+
   const logout = async () => {
     try {
       const res = await axios.post('http://localhost:9294/api/auth/logout', {}, {
@@ -93,8 +101,8 @@ export const MainContextProvider = ({ children }) => {
     }
   }
 
-  
-  const handleLogin = async (e,formData) => {
+
+  const handleLogin = async (e, formData) => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:9294/api/auth/login', formData, {
@@ -112,7 +120,23 @@ export const MainContextProvider = ({ children }) => {
       toast.error('Login failed. Please check your credentials and try again.');
     }
   };
-  return (<MainContext.Provider value={{ user, notifications, setNotifications, bookmarkEvent, bookmarkedEvents, logout,handleLogin }}>
+
+
+  const fetchEvents = async () => {
+    if (user) {
+      try {
+        const response = await axios.get(`http://localhost:9294/api/event/getEvents`, { withCredentials: true });
+        setYourEvents(response.data);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      }
+    }
+  };
+  useEffect(() => {
+    fetchEvents();
+  }, [user]);
+
+  return (<MainContext.Provider value={{ user, notifications, setNotifications, bookmarkEvent, bookmarkedEvents, logout, handleLogin , yourEvents, date, setDate, fetchNotifications}}>
     {children}
   </MainContext.Provider>
   );

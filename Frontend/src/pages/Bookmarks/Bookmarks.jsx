@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { MainContext } from '../../contexts/MainContext';
-import Event from '../../components/Event/Event'; // Make sure to import your Event component
-
+import Event from '../../components/Event/Event';
+import { AiTwotoneDelete } from "react-icons/ai";
 function Bookmarks() {
     const { bookmarkedEvents } = useContext(MainContext);
 
@@ -13,23 +13,26 @@ function Bookmarks() {
             </header>
 
             {bookmarkedEvents.length === 0 ? (
-                <div className="text-center text-gray-600 mt-12">
-                    <h2 className="text-2xl font-semibold mb-2">No Bookmarks Found</h2>
-                    <p className="text-lg">You haven't bookmarked any events yet.</p>
+                <div className="text-center text-gray-500 mt-12 h-[60vh] flex justify-center flex-col">
+                    <h2 className="text-xl font-medium mb-2">No Bookmarks Found</h2>
                 </div>
             ) : (
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+
                     {bookmarkedEvents.map((event) => (
+
                         <Event
                             key={event._id}
                             eventId={event._id}
                             image={event.eventThumbnail} // Assuming the event object has this field
                             date={event.eventDate.slice(0, 10)} // Format as needed
                             name={event.eventName}
-                            host={event.organizer.fullname} // Adjust based on your data structure
+                            host={event.organizer.fullname}
                             priceType={event.eventPrice}
                             priceValue={event.eventPriceValue}
-                            role={event.role}
+                            
                             attendees={event.attendees}
                             coorganizer={event.coorganizerEmail} // Assuming it's an array
                             status={event.status}
@@ -38,6 +41,7 @@ function Bookmarks() {
                         />
                     ))}
                 </div>
+
             )}
         </div>
     );

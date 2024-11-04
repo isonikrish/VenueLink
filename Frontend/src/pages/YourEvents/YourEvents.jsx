@@ -5,35 +5,14 @@ import Loader from '../../components/Loader'; // Import Loader
 import axios from 'axios';
 
 function YourEvents() {
-    const { user } = useContext(MainContext);
-    const [yourEvents, setYourEvents] = useState([]);
+    const { user, yourEvents } = useContext(MainContext);
+
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchEvents = async () => {
-            if (user) {
-                try {
-                    const response = await axios.get(`http://localhost:9294/api/event/getEvents`, { withCredentials: true });
-                    setYourEvents(response.data);
-                } catch (error) {
-                    console.error('Error fetching events:', error);
-                } finally {
-                    setLoading(false); // Set loading to false once the fetch is complete
-                }
-            } else {
-                setLoading(false); // If user is not available, stop loading
-            }
-        };
-        fetchEvents();
-    }, [user]);
 
-    // Show loader while data is still being fetched
-    if (loading) {
-        return <Loader />; // Return Loader component while loading is true
-    }
 
     const formatDate = (dateString) => {
-        return dateString.slice(0, 10); // Slice the first 10 characters of the date string (YYYY-MM-DD)
+        return dateString.slice(0, 10);
     };
 
     const convertTo12HourFormat = (time) => {
@@ -53,9 +32,8 @@ function YourEvents() {
             </header>
 
             {yourEvents.length === 0 ? (
-                <div className="text-center text-gray-600 mt-12">
-                    <h2 className="text-2xl font-semibold mb-2">No Events Found</h2>
-                    <p className="text-lg">You haven't created any events yet. Start organizing now!</p>
+                <div className="text-center text-gray-500 mt-12 h-[60vh] flex justify-center flex-col">
+                    <h2 className="text-xl font-medium mb-2">No Events Found</h2>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
