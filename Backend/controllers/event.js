@@ -118,7 +118,6 @@ export async function handleCreateEvent(req, res) {
       const coorganizer = await User.findOne({ email: trimmedEmail });
 
       if (coorganizer) {
-
         const newNotification = new Notification({
           to: coorganizer._id,
           event: savedEvent._id,
@@ -303,5 +302,29 @@ export async function handleCheckIn(req, res) {
   } catch (error) {
     console.error(error); // Log the error for debugging
     res.status(500).json({ message: "Server error" });
+  }
+}
+export async function handleSearchEvent(req, res) {
+  const { address } = req.query;
+  if (!address) {
+    return res
+      .status(400)
+      .json({ message: "Address query parameter is required" });
+  }
+  try {
+    const regex = new RegExp(address, "i");
+    const events = await Event.find({ eventAddress: regex })
+      .populate("organizer")
+      .populate("attendees");
+
+    if (events.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No events found for the given address" });
+    }
+    res.status(200).json(events);
+  } catch (error) {
+    console.error("Error searching for events:", error.message);
+    res.status(500).json({ message: "Internal server error" });
   }
 }

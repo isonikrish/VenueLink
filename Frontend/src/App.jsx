@@ -11,8 +11,17 @@ import ManageEvent from './pages/ManageEvent/ManageEvent'
 import Notifications from './pages/Notifications/Notifications'
 import Bookmarks from './pages/Bookmarks/Bookmarks'
 import AttendedEvents from './pages/AttendedEvents/AttendedEvents'
+import { useContext, useEffect } from 'react'
+import { MainContext } from './contexts/MainContext'
 
 function App() {
+  const {user} = useContext(MainContext)
+  const navigate = useNavigate();
+  useEffect(()=>{
+    if(!user){
+      navigate("/")
+    }
+  },[user,navigate])
   return (
     <>
       <Navbar />

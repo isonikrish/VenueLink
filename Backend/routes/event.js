@@ -7,7 +7,8 @@ import {
   handleGetEvents,
   handleGetEventById,
   handleAttendEvent,
-  handleCheckIn
+  handleCheckIn,
+  handleSearchEvent
 } from "../controllers/event.js";
 import multer from "multer";
 const router = express.Router();
@@ -25,4 +26,5 @@ router.post("/publicEvents", handleGetEvents);
 router.get("/event/:id", handleGetEventById);
 router.post("/attend",protectRoute,handleAttendEvent);
 router.post('/checkin', handleCheckIn);
+router.get("/search",protectRoute, handleSearchEvent);
 export default router;
