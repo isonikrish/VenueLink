@@ -1,7 +1,7 @@
 import User from "../models/user.js";
 import bcrypt from "bcryptjs";
 import { generateTokenandSetCookie } from "../utils/generateToken.js";
-
+import client from "../config/redisconfig.js";
 export async function handleSignup(req, res) {
   try {
     const { fullname, email, password } = req.body;
@@ -94,6 +94,13 @@ export async function handleLogout(req, res) {
 export async function getMe(req, res) {
   try {
     const userId = req.user._id;
+    const cacheKey = `user:${userId}`;
+    const cachedUser = await client.get(cacheKey);
+    
+    if (cachedUser) {
+      
+      return res.status(200).json(JSON.parse(cachedUser));
+    }
     const user = await User.findById(userId)
       .populate({
         path: "createdEvents", // Populate the createdEvents first
@@ -103,6 +110,7 @@ export async function getMe(req, res) {
         path: "joinedEvents",populate: { path: "organizer", select: "fullname email profilePicUrl" },
       } 
     );
+    await client.set(cacheKey, JSON.stringify(user), { EX: 300 });
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ msg: "Internal server error" });

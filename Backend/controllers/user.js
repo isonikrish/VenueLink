@@ -1,6 +1,5 @@
 import User from "../models/user.js";
-import Event from "../models/event.js"; // Optional: To validate if the event exists
-
+import Event from "../models/event.js";
 export async function addToBookMark(req, res) {
   try {
     const { id } = req.body; // Event ID
@@ -38,9 +37,7 @@ export async function addToBookMark(req, res) {
 
 export async function getBookmarkedEvents(req, res) {
   try {
-      const userId = req.user._id; // Assuming you have middleware that sets req.user
-      
-      // Find the user and populate their bookmarked events
+      const userId = req.user._id; 
       const user = await User.findById(userId).populate({
         path: 'bookmarkedEvents',
         populate: {

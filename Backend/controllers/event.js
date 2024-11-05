@@ -5,7 +5,7 @@ import Notification from "../models/notification.js";
 import { v4 as uuidv4 } from "uuid";
 import cron from "node-cron";
 import moment from "moment";
-
+import client from "../config/redisconfig.js";
 // Function to calculate and update event status
 async function updateEventStatus(event) {
   const now = moment(); // Current time
@@ -184,7 +184,15 @@ export async function handleUserEvents(req, res) {
 export async function handleGetEvents(req, res) {
   try {
     const { date, location, price } = req.body;
+    const cacheKey = `event:${date}:${location}:${price}`;
+    const cachedEvents = await client.get(cacheKey);
 
+    if (cachedEvents) {
+      // If cached, parse and return the cached data
+      return res.json(JSON.parse(cachedEvents));
+    }
+
+    // If not cached, fetch from the database
     const events = await Event.find({
       eventDate: date,
       eventLocation: location,
@@ -195,7 +203,9 @@ export async function handleGetEvents(req, res) {
       .populate("organizer")
       .populate("coorganizerEmail");
 
-    // Send the filtered events as a JSON response
+    await client.set(cacheKey, JSON.stringify(events), {
+      EX: 300, // Expires in 5 minutes
+    });
     res.json(events);
   } catch (error) {
     console.error("Error fetching events:", error.message);
@@ -207,7 +217,12 @@ export async function handleGetEventById(req, res) {
   try {
     const { id } = req.params;
     if (!id) return res.status(404).json({ msg: "No id to find event" });
-
+    const cacheKey = `event:${id}`;
+    const cachedEvent = await client.get(cacheKey);
+    if (cachedEvent) {
+      // If cached, parse and return the cached data
+      return res.json(JSON.parse(cachedEvent));
+    }
     const event = await Event.findById(id)
       .populate({
         path: "organizer",
@@ -218,6 +233,9 @@ export async function handleGetEventById(req, res) {
         select: "profilePicUrl email fullname _id", // Select fields from the user model
       });
     if (!event) return res.status(404).json({ msg: "Event not found" });
+    await client.set(cacheKey, JSON.stringify(event), {
+      EX: 300, // Expires in 5 minutes
+    });
 
     res.status(200).json(event);
   } catch (error) {

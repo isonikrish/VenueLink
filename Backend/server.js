@@ -1,13 +1,15 @@
 import express from "express";
 import authRoutes from "./routes/auth.js";
-import eventRoutes from './routes/event.js';
-import userRoutes from './routes/user.js';
-import notificationsRoutes from './routes/notificaton.js';
+import eventRoutes from "./routes/event.js";
+import userRoutes from "./routes/user.js";
+import notificationsRoutes from "./routes/notificaton.js";
 import dotenv from "dotenv";
 import connectMongoDB from "./config/dbconfig.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import cloudinary from 'cloudinary'
+import cloudinary from "cloudinary";
+import client from "./config/redisconfig.js";
+
 dotenv.config();
 const app = express();
 cloudinary.config({
@@ -15,7 +17,6 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -28,11 +29,16 @@ app.use(
 );
 app.use("/api/auth", authRoutes);
 app.use("/api/event", eventRoutes);
-app.use('/api/user', userRoutes)
-app.use('/api/notifications', notificationsRoutes);
-
+app.use("/api/user", userRoutes);
+app.use("/api/notifications", notificationsRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server Started at ${process.env.PORT}`);
   connectMongoDB();
+  
+});
+process.on("SIGINT", async () => {
+  await client.quit();
+  console.log("Redis client disconnected");
+  process.exit(0);
 });
